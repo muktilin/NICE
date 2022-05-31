@@ -57,7 +57,7 @@ To make it easier for you to run our code, the Parameters in the command are exp
 - `ADD_BG`: It means whether or not the sample loaded contains '_background_'.
 - `NEW_DATA_PATH`: The path where NICE generates new datasets.
 ## Models and Generated Files
-For the Motifs Predictor in NSD and Motifs-NICE, we provide the trained models (checkpoint) for verification purpose. Please download from here* and unzip to checkpoints. Besides, we provide the files generated in new_data, you can download from here*.)
+For the Motifs Predictor in NSD and Motifs-NICE, we provide the trained models (checkpoint) for verification purpose. Please download from [here*](https://drive.google.com/drive/folders/1hfeqruVM99Bk1q3O_5mkibJSHXbWxDEK?usp=sharing) and unzip to checkpoints. Besides, we provide the files generated in new_data, you can download from [here*](https://drive.google.com/drive/folders/1JDNeUdug2ewLlRID3yepKVgjw5PenE50?usp=sharing).)
 
 
 ## Citations
