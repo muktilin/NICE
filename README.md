@@ -5,7 +5,7 @@
 ![PyTorch](https://img.shields.io/badge/pytorch-1.7.0-%237732a8)
 
 Our paper [The Devil is in the Labels:
-Noisy Label Correction for Robust Scene Graph Generation] has been accepted by CVPR 2022.
+Noisy Label Correction for Robust Scene Graph Generation](https://openaccess.thecvf.com/content/CVPR2022/papers/Li_The_Devil_Is_in_the_Labels_Noisy_Label_Correction_for_CVPR_2022_paper.pdf) has been accepted by CVPR 2022.
 
 ## Installation
 
