@@ -373,9 +373,9 @@ def generate_rel_subset(model_name, method_name, change_noisy_name, subset_n, ne
             changed_rel_label_weight = changed_rel_label_weights[noisy_rel_ids.index(image_rel_id)]
             image_noisy_changed_label_weight_dict[image_id].append(changed_rel_label_weight)
 
-    image_clean_dict = {}
-    image_clean_label_dict = {}
-    image_clean_pair_dict = {}
+    image_label_dict = {}
+    image_pair_dict = {}
+    image_id_dict = {}
     path = new_data_path + '/' + 'rel_ids_{}.txt'.format(model_name)
     rel_pair_path = new_data_path + '/' + 'rel_pairs_ids_{}.txt'.format(model_name)
     rel_label_path = new_data_path + '/' + 'rel_labels_{}.txt'.format(model_name)
@@ -390,12 +390,13 @@ def generate_rel_subset(model_name, method_name, change_noisy_name, subset_n, ne
     for i in range(len(rel_ids)):
         image_rel_id = rel_ids[i]
         image_id, rel_id = image_rel_id.split('_')
-        if image_id not in image_clean_dict.keys():
-            image_clean_dict[image_id] = []
-            image_clean_pair_dict[image_id] = []
-            image_clean_label_dict[image_id] = []
-        image_clean_pair_dict[image_id].append(rel_pairs[i])
-        image_clean_label_dict[image_id].append(rel_labels[i])
+        if image_id not in image_pair_dict.keys():
+            image_id_dict[image_id] = []
+            image_pair_dict[image_id] = []
+            image_label_dict[image_id] = []
+        image_id_dict[image_id].append(rel_id)
+        image_pair_dict[image_id].append(rel_pairs[i])
+        image_label_dict[image_id].append(rel_labels[i])
 
 
     np.save(new_data_path + '/' + 'rel_clean_set_{}_{}.npy'.format(model_name, method_name), image_clean_dict)
@@ -405,8 +406,8 @@ def generate_rel_subset(model_name, method_name, change_noisy_name, subset_n, ne
     np.save(new_data_path + '/' + 'changed_rel_weights_{}_{}_{}.npy'.format(model_name, method_name, change_noisy_name),
             image_noisy_changed_label_weight_dict)
     np.save(new_data_path + '/' + 'rel_ids_{}_{}.npy'.format(model_name, method_name), image_clean_dict)
-    np.save(new_data_path + '/' + 'rel_pairs_ids_{}_{}.npy'.format(model_name, method_name), image_clean_pair_dict)
-    np.save(new_data_path + '/' + 'rel_labels_{}_{}.npy'.format(model_name, method_name), image_clean_label_dict)
+    np.save(new_data_path + '/' + 'rel_pairs_ids_{}_{}.npy'.format(model_name, method_name), image_pair_dict)
+    np.save(new_data_path + '/' + 'rel_labels_{}_{}.npy'.format(model_name, method_name), image_label_dict)
 
 
 def test_ldcof_cluster(cfg, model_name, method_name, new_data_path):
