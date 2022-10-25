@@ -405,7 +405,7 @@ def generate_rel_subset(model_name, method_name, change_noisy_name, subset_n, ne
             image_noisy_changed_label_dict)
     np.save(new_data_path + '/' + 'changed_rel_weights_{}_{}_{}.npy'.format(model_name, method_name, change_noisy_name),
             image_noisy_changed_label_weight_dict)
-    np.save(new_data_path + '/' + 'rel_ids_{}_{}.npy'.format(model_name, method_name), image_clean_dict)
+    np.save(new_data_path + '/' + 'rel_ids_{}_{}.npy'.format(model_name, method_name), image_id_dict)
     np.save(new_data_path + '/' + 'rel_pairs_ids_{}_{}.npy'.format(model_name, method_name), image_pair_dict)
     np.save(new_data_path + '/' + 'rel_labels_{}_{}.npy'.format(model_name, method_name), image_label_dict)
 
