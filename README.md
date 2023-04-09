@@ -20,6 +20,10 @@ Check [DATASET.md](DATASET.md) for instructions of dataset preprocessing.
 ```base
 CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --master_port 10025 --nproc_per_node=2 tools/relation_train_net.py --config-file "configs/e2e_relation_X_101_32_8_FPN_1x.yaml" MODEL.ROI_RELATION_HEAD.USE_GT_BOX True MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL True MODEL.ROI_RELATION_HEAD.PREDICTOR MotifConfidencePredictor SOLVER.IMS_PER_BATCH 12 TEST.IMS_PER_BATCH 2 DTYPE "float16" SOLVER.MAX_ITER 50000 SOLVER.VAL_PERIOD 2000 SOLVER.CHECKPOINT_PERIOD 2000 GLOVE_DIR glove MODEL.PRETRAINED_DETECTOR_CKPT checkpoints/pretrained_faster_rcnn/model_final.pth OUTPUT_DIR checkpoints/motif-predcls-non-bg-reweight TYPE None ADD_BG False NEW_DATA_PATH new_data SOLVER.SCHEDULE.TYPE WarmupMultiStepLR SOLVER.BASE_LR 0.001
 ```
+## Extract Information from Original Dataset
+```base
+CUDA_VISIBLE_DEVICES=0 CUDA_LAUNCH_BLOCKING=1 python -m torch.distributed.launch --master_port 10037 --nproc_per_node=1 tools/generate_has_rels_results.py --config-file "configs/e2e_relation_X_101_32_8_FPN_1x.yaml" MODEL.ROI_RELATION_HEAD.USE_GT_BOX True MODEL.ROI_RELATION_HEAD.USE_GT_OBJECT_LABEL True MODEL.ROI_RELATION_HEAD.PREDICTOR MotifPredictor TEST.IMS_PER_BATCH 1 DTYPE "float16" GLOVE_DIR glove MODEL.PRETRAINED_DETECTOR_CKPT checkpoints/motif-precls-exmp OUTPUT_DIR checkpoints/motif-precls-exmp GROUPS tail GROUPS_T [0.6] ADD_BG True NEW_DATA_PATH new_data 
+```
 
 ## Completing Missing Annotated Triplets by NSD
 ```base
