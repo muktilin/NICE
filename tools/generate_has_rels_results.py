@@ -177,7 +177,7 @@ def generate_has_rels_results(cfg, local_rank, distributed, logger, new_data_pat
         rel_pair_ids = results_dict_load.item()[image_id].get_field('target_rels_pair_idxs')
         objs_labels = (results_dict_load.item()[image_id].get_field('labels'))
 
-        rel_ids.extend([str(image_id) + '_' + str(x) for x in range(results_dict_load.item()[image_id].get_field('pred_rel_rep').shape[0])])
+        rel_ids.extend([str(image_id) + '_' + str(x) for x in range(results_dict_load.item()[image_id].get_field('pred_rel_labels').shape[0])])
 
         rel_labels.extend(target_label)
         rel_pair_idxs_dict[image_id] = rel_pair_ids
