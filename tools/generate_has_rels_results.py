@@ -137,34 +137,28 @@ def generate_has_rels_results(cfg, local_rank, distributed, logger, new_data_pat
 
     model.eval()
     name = 'motif_predcls_has_rels'
-    if not os.path.exists(new_data_path + '/' + 'results_dict_{}.npy'.format(name)):
-        results_dict = {}
-        for _, batch in enumerate(tqdm(data_loaders_val[0])):
+ for _, batch in enumerate(tqdm(data_loaders_val[0])):
             with torch.no_grad():
                 images, targets, image_ids = batch
+                for i in range(len(image_ids)):
+                    tgt_rel_matrix = targets[i].get_field("relation")  # [tgt, tgt]
+                    tgt_pair_idxs = torch.nonzero(tgt_rel_matrix > 0)
+                    tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().view(-1)
+                    tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().view(-1)
+                    tgt_rel_labs = tgt_rel_matrix[tgt_head_idxs, tgt_tail_idxs].contiguous().view(-1)
+                    if len(tgt_pair_idxs) <= 0:
+                        continue
+                    if len(targets[i]) <= 0:
+                        continue
+                    needed_key = {}
+                    needed_key.update({'target_rels': tgt_rel_labs.cpu()})
+                    needed_key.update({'target_rels_pair_idxs': tgt_pair_idxs.cpu()})
+                    needed_key.update({'labels': targets[i].get_field("labels").cpu()})
+                    results_dict.update({image_ids[i]:needed_key})
 
-                tgt_rel_matrix = targets[0].get_field("relation")  # [tgt, tgt]
-                tgt_pair_idxs = torch.nonzero(tgt_rel_matrix > 0)
-                tgt_head_idxs = tgt_pair_idxs[:, 0].contiguous().view(-1)
-                tgt_tail_idxs = tgt_pair_idxs[:, 1].contiguous().view(-1)
-                tgt_rel_labs = tgt_rel_matrix[tgt_head_idxs, tgt_tail_idxs].contiguous().view(-1)
+        torch.save(results_dict, new_data_path + '/' + 'results_dict_{}.pth'.format(name))
 
-                if len(tgt_pair_idxs) <= 0:
-                    continue
-                if len(tgt_pair_idxs[0]) <= 0:
-                    continue
-
-                targets = [target.to(device) for target in targets]
-                outputs = model(images.to(device), targets)
-                if outputs == None:
-                    continue
-                # print(targets[0].get_field("labels"))
-                outputs[0].add_field('target_rels', tgt_rel_labs.cpu())
-                outputs[0].add_field('target_rels_pair_idxs', tgt_pair_idxs.cpu())
-                results_dict.update({image_id: output for image_id, output in zip(image_ids, outputs)})
-        np.save(new_data_path + '/' + 'results_dict_{}.npy'.format(name), results_dict)
-    results_dict_load = np.load(new_data_path + '/' + 'results_dict_{}.npy'.format(name), allow_pickle=True)
-
+    results_dict_load = dict(torch.load(new_data_path + '/' + 'results_dict_{}.pth'.format(name)))
 
     rel_ids = []
     rel_labels = []
@@ -172,13 +166,13 @@ def generate_has_rels_results(cfg, local_rank, distributed, logger, new_data_pat
     rel_pair_idxs_dict = {}
     rel_pairs_ids_generated = []
 
-    for image_id in results_dict_load.item().keys():
-        target_label = results_dict_load.item()[image_id].get_field('target_rels')
-        rel_pair_ids = results_dict_load.item()[image_id].get_field('target_rels_pair_idxs')
-        objs_labels = (results_dict_load.item()[image_id].get_field('labels'))
 
-        rel_ids.extend([str(image_id) + '_' + str(x) for x in range(results_dict_load.item()[image_id].get_field('pred_rel_labels').shape[0])])
+    for image_id in results_dict_load.keys():
+        target_label = results_dict_load[image_id]['target_rels']
+        rel_pair_ids = results_dict_load[image_id]['target_rels_pair_idxs']
+        objs_labels = results_dict_load[image_id]['labels']
 
+        rel_ids.extend([str(image_id) + '_' + str(x) for x in range(results_dict_load[image_id]['target_rels_pair_idxs'].shape[0])])
         rel_labels.extend(target_label)
         rel_pair_idxs_dict[image_id] = rel_pair_ids
         for rel_pair_id in rel_pair_ids:
